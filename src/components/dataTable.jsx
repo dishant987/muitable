@@ -3,12 +3,11 @@ import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import { Box, Typography, TextField, Button, Drawer, Tooltip, IconButton } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import FilterListIcon from '@mui/icons-material/FilterList';
-import ClearIcon from '@mui/icons-material/Clear';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import CloseIcon from '@mui/icons-material/Close';
 import data from '../assets/data'; // Importing sample data
 import CustomNoRowsOverlay from './NoRow'; // Custom component to display when there are no rows
 import { PriceRangeSlider, SalePriceSlider } from './rangeSlider';
+import DateCellRenderer from './DateCellRenderer';
+import DateRangeDrawer from './dateRangeFilter';
 
 const DataTable = () => {
     const [tableData, setTableData] = useState([]);
@@ -17,6 +16,7 @@ const DataTable = () => {
     const [priceRange, setPriceRange] = useState([0, 100]);
     const [salePriceRange, setSalePriceRange] = useState([0, 100]);
     const [isDrawerOpen, setDrawerOpen] = useState(false);
+    const [dateRangeFilter, setDateRangeFilter] = useState({ startDate: null, endDate: null });
 
     useEffect(() => {
         setTableData(data);
@@ -40,6 +40,39 @@ const DataTable = () => {
         setTableData(fildata);
         setDrawerOpen(false);
     };
+    const setDateRangeFilterData = (dateRange) => {
+        const { startDate, endDate } = dateRange;
+
+        const filteredData = data.filter((row) => {
+            const createdAt = new Date(row.createdAt);
+            const updatedAt = new Date(row.updatedAt);
+
+            // Check if the startDate and endDate are both provided
+            if (startDate && endDate) {
+                return (
+                    createdAt >= new Date(startDate) &&
+                    createdAt <= new Date(endDate) &&
+                    updatedAt >= new Date(startDate) &&
+                    updatedAt <= new Date(endDate)
+                );
+            }
+            // If only startDate is provided
+            else if (startDate) {
+                return createdAt >= new Date(startDate) && updatedAt >= new Date(startDate);
+            }
+            // If only endDate is provided
+            else if (endDate) {
+                return createdAt <= new Date(endDate) && updatedAt <= new Date(endDate);
+            }
+            // If no date range is selected, return all rows
+            return true;
+        });
+
+        setTableData(filteredData);
+        setDrawerOpen(false);
+
+    };
+
 
     const clearRangeFilters = () => {
         setPriceRange([0, 100]);
@@ -51,8 +84,26 @@ const DataTable = () => {
         { field: 'name', headerName: 'Name', flex: 1 },
         { field: 'category', headerName: 'Category', flex: 0.7 },
         { field: 'subcategory', headerName: 'SubCategory', flex: 0.7 },
-        { field: 'createdAt', headerName: 'Created At', flex: 1.5 },
-        { field: 'updatedAt', headerName: 'Updated At', flex: 1.5 },
+        {
+            field: 'createdAt',
+            headerName: 'Created At',
+            flex: 1,
+            renderCell: (params) => (
+                <Typography variant='subtitle2' color="textSecondary" sx={{ marginTop: '15px' }}>
+                    <DateCellRenderer value={params.value} />
+                </Typography>
+            )
+        },
+        {
+            field: 'updatedAt',
+            headerName: 'Updated At',
+            flex: 1,
+            renderCell: (params) => (
+                <Typography variant="body2" color="textSecondary" sx={{ marginTop: '15px' }}>
+                    <DateCellRenderer value={params.value} />
+                </Typography>
+            )
+        },
         { field: 'price', headerName: 'Price', flex: 0.7 },
         { field: 'sale_price', headerName: 'Sale Price', flex: 0.7 },
     ];
@@ -76,6 +127,7 @@ const DataTable = () => {
                         <FilterListIcon />
                     </IconButton>
                 </Tooltip>
+                <DateRangeDrawer setDateRangeFilter={setDateRangeFilterData} />
             </Box>
 
 
