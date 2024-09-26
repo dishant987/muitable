@@ -1,24 +1,27 @@
 import React, { useEffect, useState } from 'react';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
-import { Box, Typography, TextField, Button, Drawer } from '@mui/material'; // Import TextField for search input
+import { Box, Typography, TextField, Button, Drawer, Tooltip, IconButton } from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
+import FilterListIcon from '@mui/icons-material/FilterList';
+import ClearIcon from '@mui/icons-material/Clear';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CloseIcon from '@mui/icons-material/Close';
 import data from '../assets/data'; // Importing sample data
 import CustomNoRowsOverlay from './NoRow'; // Custom component to display when there are no rows
 import { PriceRangeSlider, SalePriceSlider } from './rangeSlider';
 
 const DataTable = () => {
-    // State to hold the table data, manage pagination, and search query
     const [tableData, setTableData] = useState([]);
-    const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 }); // State to manage pagination model
-    const [searchQuery, setSearchQuery] = useState(''); // State to manage search input
+    const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 });
+    const [searchQuery, setSearchQuery] = useState('');
     const [priceRange, setPriceRange] = useState([0, 100]);
     const [salePriceRange, setSalePriceRange] = useState([0, 100]);
     const [isDrawerOpen, setDrawerOpen] = useState(false);
-    // useEffect to set the table data when the component mounts
+
     useEffect(() => {
-        setTableData(data); // Set the initial data for the table
+        setTableData(data);
     }, []);
 
-    // Filtered data based on the search query
     const filteredData = tableData.filter((row) => {
         return Object.values(row).some((value) =>
             String(value).toLowerCase().includes(searchQuery.toLowerCase())
@@ -27,105 +30,79 @@ const DataTable = () => {
 
     const setRangeFilterData = () => {
         const fildata = data.filter((row) => {
-            return row.price >= priceRange[0] && row.price <= priceRange[1] && row.sale_price >= salePriceRange[0] && row.sale_price <= salePriceRange[1];
+            return (
+                row.price >= priceRange[0] &&
+                row.price <= priceRange[1] &&
+                row.sale_price >= salePriceRange[0] &&
+                row.sale_price <= salePriceRange[1]
+            );
         });
         setTableData(fildata);
         setDrawerOpen(false);
-
     };
 
-    // Column definitions for the DataGrid
+    const clearRangeFilters = () => {
+        setPriceRange([0, 100]);
+        setSalePriceRange([0, 100]);
+    };
+
     const columns = [
-        {
-            field: 'sr', // Field name in the data
-            headerName: 'Sr No', // Header title
-            flex: 0.5, // Flex property to control width
-            renderCell: (params) => ( // Custom rendering for cell content
-                <Typography
-                    variant="body2"
-                    color="textSecondary"
-                    sx={{ fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '15px' }}
-                >
-                    {params.id} {/* Displaying the row ID as Sr No */}
-                </Typography>
-            ),
-        },
-        {
-            field: 'name', // Field name in the data
-            headerName: 'Name', // Header title
-            flex: 1, // Width flexibility
-        },
-        {
-            field: 'category', // Field name in the data
-            headerName: 'Category', // Header title
-            flex: 0.7,
-        },
-        {
-            field: 'subcategory',
-            headerName: 'SubCategory',
-            flex: 0.7,
-        },
-        {
-            field: 'createdAt',
-            headerName: 'Created At',
-            flex: 1.5,
-        },
-        {
-            field: 'updatedAt',
-            headerName: 'Updated At',
-            flex: 1.5,
-        },
-        {
-            field: 'price',
-            headerName: 'Price',
-            flex: 0.7,
-        },
-        {
-            field: 'sale_price',
-            headerName: 'Sale Price',
-            flex: 0.7,
-        },
+        { field: 'sr', headerName: 'Sr No', flex: 0.5, renderCell: (params) => (<Typography variant="body2" color="textSecondary" sx={{ fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '15px' }}>{params.id}</Typography>) },
+        { field: 'name', headerName: 'Name', flex: 1 },
+        { field: 'category', headerName: 'Category', flex: 0.7 },
+        { field: 'subcategory', headerName: 'SubCategory', flex: 0.7 },
+        { field: 'createdAt', headerName: 'Created At', flex: 1.5 },
+        { field: 'updatedAt', headerName: 'Updated At', flex: 1.5 },
+        { field: 'price', headerName: 'Price', flex: 0.7 },
+        { field: 'sale_price', headerName: 'Sale Price', flex: 0.7 },
     ];
 
     return (
         <Box sx={{ width: '100%', height: 'auto' }}>
             {/* Search input for filtering rows */}
-            <TextField
-                variant="outlined"
-                size='small'
-                placeholder="Search..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)} // Update search query on input change
-                sx={{ marginBottom: 2, width: '300px' }} // Style for the search input
-            />
-            <Button variant="outlined" onClick={() => setDrawerOpen(true)}>
-                Set Price & Sale Price Range
-            </Button>
+            <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: 2 }}>
+                <TextField
+                    variant="outlined"
+                    size="small"
+                    placeholder="Search..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    sx={{ width: '300px', marginRight: 2 }}
+
+                />
+
+                <Tooltip title="Set Price & Sale Price Range">
+                    <IconButton onClick={() => setDrawerOpen(true)}>
+                        <FilterListIcon />
+                    </IconButton>
+                </Tooltip>
+            </Box>
+
+
+
             <DataGrid
-                rows={filteredData} // Use filtered data for the rows of the grid
-                getRowId={(row) => row.id} // Function to get the unique ID of each row
-                columns={columns} // Column definitions
+                rows={filteredData}
+                getRowId={(row) => row.id}
+                columns={columns}
                 slots={{
-                    toolbar: GridToolbar, // Toolbar component
-                    noResultsOverlay: CustomNoRowsOverlay, // Component to display when there are no results
+                    toolbar: GridToolbar,
+                    noResultsOverlay: CustomNoRowsOverlay,
                 }}
-                pagination // Enable pagination
-                paginationModel={paginationModel} // Set pagination model
-                onPaginationModelChange={(model) => setPaginationModel(model)} // Update pagination model on change
-
-                pageSizeOptions={[10, 20, 50, 100]} // Options for page size
-                autoHeight // Automatically adjust height based on content
-                disableSelectionOnClick // Disable row selection on click
-                sx={{
-                    '--DataGrid-overlayHeight': '300px', // Set custom overlay height
-                }}
+                pagination
+                paginationModel={paginationModel}
+                onPaginationModelChange={(model) => setPaginationModel(model)}
+                pageSizeOptions={[10, 20, 50, 100]}
+                autoHeight
+                disableSelectionOnClick
+                sx={{ '--DataGrid-overlayHeight': '300px' }}
             />
 
+            {/* Drawer for range filters */}
             <Drawer
                 anchor="right"
                 open={isDrawerOpen}
                 onClose={() => setDrawerOpen(false)}
-                sx={{ width: '300px' }}
+                sx={{ width: '200px' }}
             >
                 <Box sx={{ width: '300px', p: 3 }}>
                     <Typography variant="h6" gutterBottom>
@@ -138,28 +115,50 @@ const DataTable = () => {
                     </Typography>
                     <SalePriceSlider salePriceRange={salePriceRange} setSalePriceRange={setSalePriceRange} />
 
-                    {/* Close button inside Drawer */}
-                    <Button
-                        variant="contained"
-                        fullWidth
-                        onClick={() => setRangeFilterData()}
-                        sx={{ mt: 4 }}
-                    >
-                        Apply
-                    </Button>
-                    <Button
-                        variant="contained"
-                        color="error"
-                        fullWidth
-                        onClick={() => setDrawerOpen(false)}
-                        sx={{ mt: 4 }}
-                    >
-                        Close
-                    </Button>
+                    {/* Apply Button */}
+                    <Tooltip title="Apply Filters">
+                        <Button
+                            variant="contained"
+                            fullWidth
+
+                            onClick={() => setRangeFilterData()}
+                            sx={{ mt: 4 }}
+                        >
+                            Apply
+                        </Button>
+                    </Tooltip>
+
+                    {/* Clear Range Button */}
+                    <Tooltip title="Clear Filters">
+                        <Button
+                            variant="contained"
+                            color="warning"
+                            fullWidth
+
+                            onClick={clearRangeFilters}
+                            sx={{ mt: 2 }}
+                        >
+                            Clear Range
+                        </Button>
+                    </Tooltip>
+
+                    {/* Close Button */}
+                    <Tooltip title="Close Filter">
+                        <Button
+                            variant="contained"
+                            color="error"
+                            fullWidth
+
+                            onClick={() => setDrawerOpen(false)}
+                            sx={{ mt: 2 }}
+                        >
+                            Close
+                        </Button>
+                    </Tooltip>
                 </Box>
             </Drawer>
         </Box>
     );
 };
 
-export default DataTable; // Export the DataTable component
+export default DataTable;
