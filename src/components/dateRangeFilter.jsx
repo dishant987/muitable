@@ -30,7 +30,7 @@ const DateRangeDrawer = ({ setDateRangeFilter }) => {
             </Tooltip>
 
             <Drawer anchor="right" open={isDrawerOpen} onClose={() => setDrawerOpen(false)}>
-                <Box sx={{ width: 300, padding: 3 }}>
+                <Box sx={{ width: 300, padding: 3, display: 'flex', flexDirection: 'column', gap: 2 }}>
                     <Typography variant="h6" gutterBottom>
                         Filter by Date Range
                     </Typography>
@@ -43,6 +43,7 @@ const DateRangeDrawer = ({ setDateRangeFilter }) => {
                     />
 
                     <DatePicker
+
                         label="End Date"
                         value={endDate}
                         onChange={(newDate) => setEndDate(newDate)}
