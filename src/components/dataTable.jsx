@@ -1,18 +1,26 @@
 import React, { useEffect, useState } from 'react';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, TextField } from '@mui/material'; // Import TextField for search input
 import data from '../assets/data'; // Importing sample data
 import CustomNoRowsOverlay from './NoRow'; // Custom component to display when there are no rows
 
 const DataTable = () => {
-    // State to hold the table data and manage pagination
+    // State to hold the table data, manage pagination, and search query
     const [tableData, setTableData] = useState([]);
     const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 }); // State to manage pagination model
+    const [searchQuery, setSearchQuery] = useState(''); // State to manage search input
 
     // useEffect to set the table data when the component mounts
     useEffect(() => {
         setTableData(data); // Set the initial data for the table
     }, []);
+
+    // Filtered data based on the search query
+    const filteredData = tableData.filter((row) => {
+        return Object.values(row).some((value) =>
+            String(value).toLowerCase().includes(searchQuery.toLowerCase())
+        );
+    });
 
     // Column definitions for the DataGrid
     const columns = [
@@ -69,8 +77,17 @@ const DataTable = () => {
 
     return (
         <Box sx={{ width: '100%', height: 'auto' }}>
+            {/* Search input for filtering rows */}
+            <TextField
+                variant="outlined"
+                size='small'
+                placeholder="Search..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)} // Update search query on input change
+                sx={{ marginBottom: 2, width: '300px' }} // Style for the search input
+            />
             <DataGrid
-                rows={tableData} // Data for the rows of the grid
+                rows={filteredData} // Use filtered data for the rows of the grid
                 getRowId={(row) => row.id} // Function to get the unique ID of each row
                 columns={columns} // Column definitions
                 slots={{
@@ -85,7 +102,6 @@ const DataTable = () => {
                 autoHeight // Automatically adjust height based on content
                 disableSelectionOnClick // Disable row selection on click
                 sx={{
-                   
                     '--DataGrid-overlayHeight': '300px', // Set custom overlay height
                 }}
             />
