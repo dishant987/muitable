@@ -1,15 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
-import { Box, Typography, TextField } from '@mui/material'; // Import TextField for search input
+import { Box, Typography, TextField, Button, Drawer } from '@mui/material'; // Import TextField for search input
 import data from '../assets/data'; // Importing sample data
 import CustomNoRowsOverlay from './NoRow'; // Custom component to display when there are no rows
+import { PriceRangeSlider, SalePriceSlider } from './rangeSlider';
 
 const DataTable = () => {
     // State to hold the table data, manage pagination, and search query
     const [tableData, setTableData] = useState([]);
     const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 }); // State to manage pagination model
     const [searchQuery, setSearchQuery] = useState(''); // State to manage search input
-
+    const [priceRange, setPriceRange] = useState([0, 100]);
+    const [salePriceRange, setSalePriceRange] = useState([0, 100]);
+    const [isDrawerOpen, setDrawerOpen] = useState(false);
     // useEffect to set the table data when the component mounts
     useEffect(() => {
         setTableData(data); // Set the initial data for the table
@@ -21,6 +24,15 @@ const DataTable = () => {
             String(value).toLowerCase().includes(searchQuery.toLowerCase())
         );
     });
+
+    const setRangeFilterData = () => {
+        const fildata = data.filter((row) => {
+            return row.price >= priceRange[0] && row.price <= priceRange[1] && row.sale_price >= salePriceRange[0] && row.sale_price <= salePriceRange[1];
+        });
+        setTableData(fildata);
+        setDrawerOpen(false);
+
+    };
 
     // Column definitions for the DataGrid
     const columns = [
@@ -86,6 +98,9 @@ const DataTable = () => {
                 onChange={(e) => setSearchQuery(e.target.value)} // Update search query on input change
                 sx={{ marginBottom: 2, width: '300px' }} // Style for the search input
             />
+            <Button variant="outlined" onClick={() => setDrawerOpen(true)}>
+                Set Price & Sale Price Range
+            </Button>
             <DataGrid
                 rows={filteredData} // Use filtered data for the rows of the grid
                 getRowId={(row) => row.id} // Function to get the unique ID of each row
@@ -105,6 +120,44 @@ const DataTable = () => {
                     '--DataGrid-overlayHeight': '300px', // Set custom overlay height
                 }}
             />
+
+            <Drawer
+                anchor="right"
+                open={isDrawerOpen}
+                onClose={() => setDrawerOpen(false)}
+                sx={{ width: '300px' }}
+            >
+                <Box sx={{ width: '300px', p: 3 }}>
+                    <Typography variant="h6" gutterBottom>
+                        Set Price Range
+                    </Typography>
+                    <PriceRangeSlider priceRange={priceRange} setPriceRange={setPriceRange} />
+
+                    <Typography variant="h6" gutterBottom sx={{ mt: 4 }}>
+                        Set Sale Price Range
+                    </Typography>
+                    <SalePriceSlider salePriceRange={salePriceRange} setSalePriceRange={setSalePriceRange} />
+
+                    {/* Close button inside Drawer */}
+                    <Button
+                        variant="contained"
+                        fullWidth
+                        onClick={() => setRangeFilterData()}
+                        sx={{ mt: 4 }}
+                    >
+                        Apply
+                    </Button>
+                    <Button
+                        variant="contained"
+                        color="error"
+                        fullWidth
+                        onClick={() => setDrawerOpen(false)}
+                        sx={{ mt: 4 }}
+                    >
+                        Close
+                    </Button>
+                </Box>
+            </Drawer>
         </Box>
     );
 };
