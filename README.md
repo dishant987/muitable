@@ -1,8 +1,31 @@
-# React + Vite
+# Datatable MUI Project
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is a **React** project that uses **Material UI (MUI)** for the UI components and **Vite** as the build tool. The project includes a data table using **MUI's DataGrid** component along with date pickers, custom styling, and theming.
 
-Currently, two official plugins are available:
+## Table of Contents
+- [Features](#features)
+- [Installation](#installation)
+- [Available Scripts](#available-scripts)
+- [Dependencies](#dependencies)
+- [Dev Dependencies](#dev-dependencies)
+- [Usage](#usage)
+- [License](#license)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Features
+
+- Data table using MUI's DataGrid.
+- Material UI components (Buttons, Icons, Date Pickers).
+- Custom styling with **Emotion** and **styled-components**.
+- Date management with **Day.js** and **Moment.js**.
+- Fast development and build with **Vite**.
+- Linting with **ESLint**.
+
+## Installation
+
+1. Clone the repository:
+
+   ```bash
+   git clone https://github.com/your-username/datatablemui.git
+   cd datatablemui
+2. Install the dependencies:
+   npm install

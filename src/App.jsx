@@ -1,5 +1,5 @@
 import { Typography, Card, CardContent,  Paper } from '@mui/material';
-import DataTable from './components/DataTable.jsx';
+import DataTable from './components/DataTable';
 
 
 const App = () => {
