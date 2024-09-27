@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import { Box, Button, Drawer, Typography, Tooltip, IconButton, TextField } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import FilterListIcon from '@mui/icons-material/FilterList';
 import { DateRangeIcon } from '@mui/x-date-pickers';
 
 const DateRangeDrawer = ({ setDateRangeFilter }) => {

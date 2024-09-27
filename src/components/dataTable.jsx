@@ -5,9 +5,9 @@ import SearchIcon from '@mui/icons-material/Search';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import data from '../assets/data'; // Importing sample data
 import CustomNoRowsOverlay from './NoRow'; // Custom component to display when there are no rows
-import { PriceRangeSlider, SalePriceSlider } from './rangeSlider';
-import DateCellRenderer from './DateCellRenderer';
-import DateRangeDrawer from './dateRangeFilter';
+import { PriceRangeSlider, SalePriceSlider } from './RangeSlider.jsx';
+import DateCellRenderer from './DateCellRenderer.jsx';
+import DateRangeDrawer from './DateRangeFilter.jsx';
 
 const DataTable = () => {
     const [tableData, setTableData] = useState([]);
